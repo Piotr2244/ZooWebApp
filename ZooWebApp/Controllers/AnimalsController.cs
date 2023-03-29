@@ -51,8 +51,8 @@ namespace ZooWebApp.Controllers
                 return NotFound();
             }
 
-            var animal = await _context.Animal
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var animal = (await _context.Animal
+                .Include(s => s.Snacks).FirstOrDefaultAsync(m => m.Id == id));
             if (animal == null)
             {
                 return NotFound();
@@ -70,8 +70,7 @@ namespace ZooWebApp.Controllers
 
         // POST: Animals/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize]
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.Y
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Species,Name")] Animal animal)
@@ -172,8 +171,11 @@ namespace ZooWebApp.Controllers
             var animal = await _context.Animal.FindAsync(id);
             if (animal != null)
             {
+
                 _context.Animal.Remove(animal);
             }
+            var snacks = _context.Snack.Where(s => s.AnimalId == animal.Id);
+            _context.Snack.RemoveRange(snacks);
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

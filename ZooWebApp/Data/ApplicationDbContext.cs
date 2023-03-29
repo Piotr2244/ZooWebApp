@@ -11,5 +11,6 @@ namespace ZooWebApp.Data
         {
         }
         public DbSet<ZooWebApp.Models.Animal>? Animal { get; set; }
+        public DbSet<ZooWebApp.Models.Snack>? Snack { get; set; }
     }
 }
